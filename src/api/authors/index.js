@@ -39,7 +39,9 @@ authorsRouter.post("/", (request, response) => {
   const checkMail = authors.some((a) => a.email === request.body.email);
 
   if (checkMail) {
-    response.status(400).send("Email is already in use!");
+    response.status(400).send({
+      message: "Email is already in use!",
+    });
   } else {
     const newAuthor = {
       ...request.body,
