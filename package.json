@@ -1,0 +1,30 @@
+{
+  "name": "strive-blog-api-expressjs-basics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yasirozdemir/strive-blog-api-expressJS-basics.git"
+  },
+  "keywords": [],
+  "author": "M. Yasir Ozdemir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yasirozdemir/strive-blog-api-expressJS-basics/issues"
+  },
+  "homepage": "https://github.com/yasirozdemir/strive-blog-api-expressJS-basics#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-list-endpoints": "^6.0.0",
+    "uniqid": "^5.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
