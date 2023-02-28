@@ -1,4 +1,4 @@
-import Express, { response } from "express";
+import Express, { json, response } from "express";
 import fs from "fs"; // fs (file system), url and path are core modules
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -47,7 +47,22 @@ authorsRouter.post("/", (request, response) => {
 });
 
 // PUT (UPDATE A SINGLE AUTHOR)
-authorsRouter.put("/:authorId", (request, response) => {});
+authorsRouter.put("/:authorId", (request, response) => {
+  const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
+
+  const authorIndex = authors.findIndex(
+    (a) => a.id === request.params.authorId
+  );
+  const oldVersionOfAuthor = authors[authorIndex];
+  const updatedAuthor = {
+    ...oldVersionOfAuthor,
+    ...request.body,
+    updatedAt: new Date(),
+  };
+  authors[authorIndex] = updatedAuthor;
+  fs.writeFileSync(authorsJSONPath, JSON.stringify(authors));
+  response.send(updatedAuthor);
+});
 
 // DELETE
 authorsRouter.delete("/:authorId", (request, response) => {
