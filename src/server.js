@@ -11,4 +11,17 @@ server.use("/authors", authorsReducer);
 
 server.listen(port, () => {
   console.table(listEndpoints(server));
+  // listEndpoints(server) ⬇️
+  //   [
+  //     {
+  //       path: "/authors",
+  //       methods: ["GET", "POST"],
+  //       middlewares: ["anonymous"],
+  //     },
+  //     {
+  //       path: "/authors/:authorId",
+  //       methods: ["GET", "PUT", "DELETE"],
+  //       middlewares: ["anonymous"],
+  //     },
+  //   ];
 });

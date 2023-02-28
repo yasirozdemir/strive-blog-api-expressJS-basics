@@ -3,7 +3,6 @@ import fs from "fs"; // fs (file system), url and path are core modules
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
-import { request } from "http";
 
 const authorsRouter = Express.Router();
 
@@ -36,13 +35,16 @@ authorsRouter.get("/:authorId", (request, response) => {
 
 // POST
 authorsRouter.post("/", (request, response) => {
+  const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const checkMail = authors.some((a) => a.email === request.body.email);
   const newAuthor = {
     ...request.body,
+    avatar: `https://ui-avatars.com/api/?name=${request.body.name}+${request.body.surname}`,
+    checkMail: checkMail,
     createdAt: new Date(),
     updatedAt: new Date(),
     id: uniqid(),
   };
-  const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
   authors.push(newAuthor);
   fs.writeFileSync(authorsJSONPath, JSON.stringify(authors)); // updating authors.json with last added author
   response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
