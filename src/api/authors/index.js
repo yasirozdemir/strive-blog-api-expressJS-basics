@@ -34,7 +34,8 @@ authorsRouter.post("/", (request, response) => {
 // GET
 authorsRouter.get("/", (request, response) => {
   const fileContentRaw = fs.readFileSync(authorsJSONPath);
-  console.log(fileContentRaw);
+  const authors = JSON.parse(fileContentRaw);
+  response.send(authors);
 });
 
 export default authorsRouter;
