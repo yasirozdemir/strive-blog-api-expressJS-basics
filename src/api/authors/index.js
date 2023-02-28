@@ -13,6 +13,7 @@ const authorsRouter = Express.Router();
 // 3) console.log("PARENT FOLDER'S PATH: ", dirname(fileURLToPath(import.meta.url)));
 // 4) console.log("authors.json path:", join(dirname(fileURLToPath(import.meta.url)), "authors.json"))
 
+// Getting the path is explained step by step ⬆️
 const authorsJSONPath = join(
   dirname(fileURLToPath(import.meta.url)),
   "authors.json"
@@ -21,6 +22,7 @@ const authorsJSONPath = join(
 // GET (ALL THE AUTHORS)
 authorsRouter.get("/", (request, response) => {
   const fileContentRaw = fs.readFileSync(authorsJSONPath);
+  // console.log(fileContentRaw); // fileContentRow <Buffer 5b 7b 22 6e 61... -> we should convert it into something readible and understandable by people using JSON.parse
   const authors = JSON.parse(fileContentRaw);
   response.send(authors);
 });
@@ -28,7 +30,7 @@ authorsRouter.get("/", (request, response) => {
 // GET (SINGLE AUTHOR)
 authorsRouter.get("/:authorId", (request, response) => {
   const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
-  const author = authors.find((a) => a.id === request.params.authorId);
+  const author = authors.find((a) => a.id === request.params.authorId); // find returns the specific author that we searched for
   response.send(author);
 });
 
@@ -42,7 +44,7 @@ authorsRouter.post("/", (request, response) => {
   };
   const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
   authors.push(newAuthor);
-  fs.writeFileSync(authorsJSONPath, JSON.stringify(authors));
+  fs.writeFileSync(authorsJSONPath, JSON.stringify(authors)); // updating authors.json with last added author
   response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
 });
 
@@ -60,7 +62,7 @@ authorsRouter.put("/:authorId", (request, response) => {
     updatedAt: new Date(),
   };
   authors[authorIndex] = updatedAuthor;
-  fs.writeFileSync(authorsJSONPath, JSON.stringify(authors));
+  fs.writeFileSync(authorsJSONPath, JSON.stringify(authors)); // updating authors.json with last updated author
   response.send(updatedAuthor);
 });
 
