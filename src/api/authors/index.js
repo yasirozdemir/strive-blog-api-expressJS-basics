@@ -3,6 +3,7 @@ import fs from "fs"; // fs (file system), url and path are core modules
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
+import { request } from "http";
 
 const authorsRouter = Express.Router();
 
@@ -16,6 +17,20 @@ const authorsJSONPath = join(
   dirname(fileURLToPath(import.meta.url)),
   "authors.json"
 );
+
+// GET (ALL THE AUTHORS)
+authorsRouter.get("/", (request, response) => {
+  const fileContentRaw = fs.readFileSync(authorsJSONPath);
+  const authors = JSON.parse(fileContentRaw);
+  response.send(authors);
+});
+
+// GET (SINGLE AUTHOR)
+authorsRouter.get("/:authorId", (request, response) => {
+  const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const author = authors.find((a) => a.id === request.params.authorId);
+  response.send(author);
+});
 
 // POST
 authorsRouter.post("/", (request, response) => {
@@ -31,18 +46,17 @@ authorsRouter.post("/", (request, response) => {
   response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
 });
 
-// GET (ALL THE AUTHORS)
-authorsRouter.get("/", (request, response) => {
-  const fileContentRaw = fs.readFileSync(authorsJSONPath);
-  const authors = JSON.parse(fileContentRaw);
-  response.send(authors);
-});
+// PUT (UPDATE A SINGLE AUTHOR)
+authorsRouter.put("/:authorId", (request, response) => {});
 
-// GET (SINGLE AUTHOR)
-authorsRouter.get("/:authorId", (request, response) => {
+// DELETE
+authorsRouter.delete("/:authorId", (request, response) => {
   const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
-  const author = authors.find((a) => a.id === request.params.authorId);
-  response.send(author);
+  const remainingAuthors = authors.filter(
+    (a) => a.id !== request.params.authorId
+  );
+  fs.writeFileSync(authorsJSONPath, JSON.stringify(remainingAuthors));
+  response.status(204).send(); // 204 OK, no content!
 });
 
 export default authorsRouter;
