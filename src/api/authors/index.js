@@ -37,17 +37,21 @@ authorsRouter.get("/:authorId", (request, response) => {
 authorsRouter.post("/", (request, response) => {
   const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
   const checkMail = authors.some((a) => a.email === request.body.email);
-  const newAuthor = {
-    ...request.body,
-    avatar: `https://ui-avatars.com/api/?name=${request.body.name}+${request.body.surname}`,
-    checkMail: checkMail,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    id: uniqid(),
-  };
-  authors.push(newAuthor);
-  fs.writeFileSync(authorsJSONPath, JSON.stringify(authors)); // updating authors.json with last added author
-  response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
+
+  if (checkMail) {
+    response.status(400).send("Email is already in use!");
+  } else {
+    const newAuthor = {
+      ...request.body,
+      avatar: `https://ui-avatars.com/api/?name=${request.body.name}+${request.body.surname}`,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      id: uniqid(),
+    };
+    authors.push(newAuthor);
+    fs.writeFileSync(authorsJSONPath, JSON.stringify(authors)); // updating authors.json with last added author
+    response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
+  }
 });
 
 // PUT (UPDATE A SINGLE AUTHOR)
