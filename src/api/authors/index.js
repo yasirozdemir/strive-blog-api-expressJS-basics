@@ -1,4 +1,4 @@
-import Express from "express";
+import Express, { response } from "express";
 import fs from "fs"; // fs (file system), url and path are core modules
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -31,11 +31,18 @@ authorsRouter.post("/", (request, response) => {
   response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
 });
 
-// GET
+// GET (ALL THE AUTHORS)
 authorsRouter.get("/", (request, response) => {
   const fileContentRaw = fs.readFileSync(authorsJSONPath);
   const authors = JSON.parse(fileContentRaw);
   response.send(authors);
+});
+
+// GET (SINGLE AUTHOR)
+authorsRouter.get("/:authorId", (request, response) => {
+  const authors = JSON.parse(fs.readFileSync(authorsJSONPath));
+  const author = authors.find((a) => a.id === request.params.authorId);
+  response.send(author);
 });
 
 export default authorsRouter;
