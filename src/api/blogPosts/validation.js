@@ -26,6 +26,36 @@ const blogPostSchema = {
       errorMessage: "readTime is a mandatory field and needs to be an object!",
     },
   },
+  "readTime.value": {
+    in: ["body"],
+    isNumeric: {
+      errorMessage: "value is a mandatory field and needs to be a number!",
+    },
+  },
+  "readTime.unit": {
+    in: ["body"],
+    isString: {
+      errorMessage: "unit is a mandatory field and needs to be a string!",
+    },
+  },
+  author: {
+    in: ["body"],
+    isObject: {
+      errorMessage: "author is a mandatory field and needs to be an object!",
+    },
+  },
+  "author.name": {
+    in: ["body"],
+    isString: {
+      errorMessage: "name is a mandatory field and needs to be a string!",
+    },
+  },
+  content: {
+    in: ["body"],
+    isString: {
+      errorMessage: "content is a mandatory field and needs to be a string!",
+    },
+  },
 };
 
 export const checkBlogPostSchema = checkSchema(blogPostSchema);
