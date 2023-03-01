@@ -3,6 +3,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
+import createHttpError from "http-errors";
 
 const blogPostsRouter = Express.Router();
 
@@ -41,6 +42,26 @@ blogPostsRouter.get("/", (req, res, next) => {
   try {
     const blogPosts = getBlogPosts();
     res.send(blogPosts);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET BY ID
+blogPostsRouter.get("/:blogPostId", (req, res, next) => {
+  try {
+    const specificBlogPost = getBlogPosts().find(
+      (b) => b.id === req.params.blogPostId
+    );
+    if (specificBlogPost) {
+      res.send(specificBlogPost);
+    } else
+      next(
+        createHttpError(
+          404,
+          `Blog Post with the id (${req.params.blogPostId}) not found!`
+        )
+      );
   } catch (error) {
     next(error);
   }
