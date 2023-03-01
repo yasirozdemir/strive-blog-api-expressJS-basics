@@ -15,6 +15,7 @@ const getBlogPosts = () => JSON.parse(fs.readFileSync(blogPostsJSONPath));
 const writeBlogPost = (blogPosts) =>
   fs.writeFileSync(blogPostsJSONPath, JSON.stringify(blogPosts));
 
+// POST
 blogPostsRouter.post("/", (req, res, next) => {
   try {
     const blogPosts = getBlogPosts();
@@ -30,6 +31,16 @@ blogPostsRouter.post("/", (req, res, next) => {
     blogPosts.push(newBlogPost);
     writeBlogPost(blogPosts);
     res.status(201).send({ postId: newBlogPost.id });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET ALL
+blogPostsRouter.get("/", (req, res, next) => {
+  try {
+    const blogPosts = getBlogPosts();
+    res.send(blogPosts);
   } catch (error) {
     next(error);
   }
