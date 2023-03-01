@@ -3,6 +3,7 @@ export const badRequestHandler = (err, req, res, next) => {
     res.status(400).send({
       success: false,
       message: err.message,
+      errors: err.errors.map((e) => e.msg),
     });
   } else next(err);
 };

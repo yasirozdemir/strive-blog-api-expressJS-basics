@@ -5,6 +5,7 @@ import { dirname, join } from "path";
 import uniqid from "uniqid";
 import createHttpError from "http-errors";
 import authorsRouter from "../authors/index.js";
+import { checkBlogPostSchema, triggerBadRequest } from "./validation.js";
 
 const blogPostsRouter = Express.Router();
 
@@ -18,25 +19,30 @@ const writeBlogPost = (blogPosts) =>
   fs.writeFileSync(blogPostsJSONPath, JSON.stringify(blogPosts));
 
 // POST
-blogPostsRouter.post("/", (req, res, next) => {
-  try {
-    const blogPosts = getBlogPosts();
-    const newBlogPost = {
-      ...req.body,
-      author: {
-        ...req.body.author,
-        avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
-      },
-      createdAt: new Date(),
-      id: uniqid(),
-    };
-    blogPosts.push(newBlogPost);
-    writeBlogPost(blogPosts);
-    res.status(201).send({ postId: newBlogPost.id });
-  } catch (error) {
-    next(error);
+blogPostsRouter.post(
+  "/",
+  checkBlogPostSchema,
+  triggerBadRequest,
+  (req, res, next) => {
+    try {
+      const blogPosts = getBlogPosts();
+      const newBlogPost = {
+        ...req.body,
+        author: {
+          ...req.body.author,
+          avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
+        },
+        createdAt: new Date(),
+        id: uniqid(),
+      };
+      blogPosts.push(newBlogPost);
+      writeBlogPost(blogPosts);
+      res.status(201).send({ postId: newBlogPost.id });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 // GET ALL
 blogPostsRouter.get("/", (req, res, next) => {
