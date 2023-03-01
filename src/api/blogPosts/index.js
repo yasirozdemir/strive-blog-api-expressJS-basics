@@ -41,7 +41,14 @@ blogPostsRouter.post("/", (req, res, next) => {
 blogPostsRouter.get("/", (req, res, next) => {
   try {
     const blogPosts = getBlogPosts();
-    res.send(blogPosts);
+    if (req.query && req.query.title) {
+      const blogPostsWithSearchedTitle = blogPosts.filter((b) =>
+        b.title.toLowerCase().includes(req.query.title.toLowerCase())
+      );
+      res.send(blogPostsWithSearchedTitle);
+    } else {
+      res.send(blogPosts);
+    }
   } catch (error) {
     next(error);
   }
@@ -50,7 +57,8 @@ blogPostsRouter.get("/", (req, res, next) => {
 // GET BY ID
 blogPostsRouter.get("/:blogPostId", (req, res, next) => {
   try {
-    const specificBlogPost = getBlogPosts().find(
+    const blogPosts = getBlogPosts();
+    const specificBlogPost = blogPosts.find(
       (b) => b.id === req.params.blogPostId
     );
     if (specificBlogPost) {
