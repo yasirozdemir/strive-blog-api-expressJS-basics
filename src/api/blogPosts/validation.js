@@ -5,7 +5,25 @@ const blogPostSchema = {
   category: {
     in: ["body"],
     isString: {
-      errorMessage: "Title is a mandatory field and needs to be a string!",
+      errorMessage: "category is a mandatory field and needs to be a string!",
+    },
+  },
+  title: {
+    in: ["body"],
+    isString: {
+      errorMessage: "title is a mandatory field and needs to be a string!",
+    },
+  },
+  cover: {
+    in: ["body"],
+    isString: {
+      errorMessage: "cover is a mandatory field and needs to be a url string!",
+    },
+  },
+  readTime: {
+    in: ["body"],
+    isObject: {
+      errorMessage: "readTime is a mandatory field and needs to be an object!",
     },
   },
 };
