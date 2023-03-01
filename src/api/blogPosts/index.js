@@ -67,4 +67,35 @@ blogPostsRouter.get("/:blogPostId", (req, res, next) => {
   }
 });
 
+blogPostsRouter.put("/:blogPostId", (req, res, next) => {
+  try {
+    const blogPosts = getBlogPosts();
+    const index = blogPosts.findIndex(
+      (blogPost) => blogPost.id === req.params.blogPostId
+    );
+    if (index !== -1) {
+      const oldVersionOfBlogPost = blogPosts[index];
+      const updatedBlogPost = {
+        ...oldVersionOfBlogPost,
+        ...req.body,
+        updatedAt: new Date(),
+      };
+      blogPosts[index] = updatedBlogPost;
+      writeBlogPost(blogPosts);
+      res.send(
+        `Blog Post with the id (${req.params.blogPostId}) has been updated!`
+      );
+    } else {
+      next(
+        createHttpError(
+          404,
+          `Blog Post with the id (${req.params.blogPostId}) not found!`
+        )
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default blogPostsRouter;
