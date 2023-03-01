@@ -81,7 +81,7 @@ authorsRouter.get("/:authorId/blogPosts", (req, res, next) => {
   try {
     const blogPosts = getBlogPosts();
     const authorsPosts = blogPosts.filter(
-      (b) => b.author.id === parseInt(req.params.authorId)
+      (b) => b.author.id === req.params.authorId
     );
     res.send(authorsPosts);
   } catch (error) {
