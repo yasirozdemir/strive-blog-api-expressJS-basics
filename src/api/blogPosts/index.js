@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import uniqid from "uniqid";
 import createHttpError from "http-errors";
+import authorsRouter from "../authors/index.js";
 
 const blogPostsRouter = Express.Router();
 
@@ -54,7 +55,7 @@ blogPostsRouter.get("/", (req, res, next) => {
   }
 });
 
-// GET BY ID
+// GET BY BLOGPOST ID
 blogPostsRouter.get("/:blogPostId", (req, res, next) => {
   try {
     const blogPosts = getBlogPosts();
@@ -70,6 +71,19 @@ blogPostsRouter.get("/:blogPostId", (req, res, next) => {
           `Blog Post with the id (${req.params.blogPostId}) not found!`
         )
       );
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET AN AUTHOR'S BLOG POSTS
+authorsRouter.get("/:authorId/blogPosts", (req, res, next) => {
+  try {
+    const blogPosts = getBlogPosts();
+    const authorsPosts = blogPosts.filter(
+      (b) => b.author.id === parseInt(req.params.authorId)
+    );
+    res.send(authorsPosts);
   } catch (error) {
     next(error);
   }
