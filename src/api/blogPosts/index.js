@@ -196,7 +196,7 @@ blogPostsRouter.post(
       const fileExtension = extname(req.file.originalname);
       const fileName = req.params.blogPostId + fileExtension;
       await saveBlogPostsCover(fileName, req.file.buffer);
-      res.status(201).send({ message: "file uploaded!" });
+      res.status(201).send({ message: "cover uploaded!" });
     } catch (error) {
       next(error);
     }

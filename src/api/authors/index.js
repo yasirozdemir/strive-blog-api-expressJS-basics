@@ -119,7 +119,13 @@ authorsRouter.post(
       const fileExtension = extname(req.file.originalname);
       const fileName = req.params.authorId + fileExtension;
       await saveAuthorsAvatars(fileName, req.file.buffer);
-      res.status(201).send({ message: "file uploaded!" });
+
+      const authors = await getAuthors();
+      const index = authors.findIndex((a) => a.id === req.params.authorId);
+      authors[index].avatar = `http://localhost:3001/img/authors/${fileName}`;
+      writeAuthors(authors);
+
+      res.status(201).send({ message: "avatar uploaded!" });
     } catch (error) {
       next(error);
     }
