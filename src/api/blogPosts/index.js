@@ -196,6 +196,14 @@ blogPostsRouter.post(
       const fileExtension = extname(req.file.originalname);
       const fileName = req.params.blogPostId + fileExtension;
       await saveBlogPostsCover(fileName, req.file.buffer);
+
+      const blogPosts = await getBlogPosts();
+      const index = blogPosts.findIndex((b) => b.id === req.params.blogPostId);
+      blogPosts[
+        index
+      ].cover = `http://localhost:3001/img/blogPosts/${fileName}`;
+      await writeBlogPosts(blogPosts);
+
       res.status(201).send({ message: "cover uploaded!" });
     } catch (error) {
       next(error);
