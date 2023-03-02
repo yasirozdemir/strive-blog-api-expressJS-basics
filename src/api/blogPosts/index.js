@@ -145,6 +145,35 @@ blogPostsRouter.delete("/:blogPostId", async (req, res, next) => {
   }
 });
 
+// POST Blog Post Comment
+blogPostsRouter.post("/:blogPostId/comments", async (req, res, next) => {
+  try {
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET Blog Post Comment
+blogPostsRouter.get("/:blogPostId/comments", async (req, res, next) => {
+  try {
+    const blogPosts = await getBlogPosts();
+    const specificBlogPost = blogPosts.find(
+      (b) => b.id === req.params.blogPostId
+    );
+    if (specificBlogPost) {
+      res.send(specificBlogPost.comments);
+    } else
+      next(
+        createHttpError(
+          404,
+          `Blog Post with the id (${req.params.blogPostId}) not found!`
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+});
+
 // POST Blog Post Cover
 blogPostsRouter.post(
   "/:blogPostId/cover",
