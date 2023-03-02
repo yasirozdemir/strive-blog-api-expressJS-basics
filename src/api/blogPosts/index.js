@@ -148,6 +148,19 @@ blogPostsRouter.delete("/:blogPostId", async (req, res, next) => {
 // POST Blog Post Comment
 blogPostsRouter.post("/:blogPostId/comments", async (req, res, next) => {
   try {
+    const blogPosts = await getBlogPosts();
+    const index = blogPosts.findIndex(
+      (blogPost) => blogPost.id === req.params.blogPostId
+    );
+    const newComment = {
+      ...req.body,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      id: uniqid(),
+    };
+    blogPosts[index].comments.push(newComment);
+    await writeBlogPosts(blogPosts);
+    res.send("comment sent");
   } catch (error) {
     next(error);
   }
