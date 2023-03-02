@@ -18,70 +18,90 @@ const authorsRouter = Express.Router();
 // );
 
 // POST
-authorsRouter.post("/", async (request, response) => {
-  const authors = await getAuthors();
-  const checkMail = authors.some((a) => a.email === request.body.email);
+authorsRouter.post("/", async (request, response, next) => {
+  try {
+    const authors = await getAuthors();
+    const checkMail = authors.some((a) => a.email === request.body.email);
 
-  if (checkMail) {
-    response.status(400).send({
-      message: "Email is already in use!",
-    });
-  } else {
-    const newAuthor = {
-      ...request.body,
-      avatar: `https://ui-avatars.com/api/?name=${request.body.name}+${request.body.surname}`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      id: uniqid(),
-    };
-    authors.push(newAuthor);
-    await writeAuthors(authors); // updating authors.json with last added author
-    response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
+    if (checkMail) {
+      response.status(400).send({
+        message: "Email is already in use!",
+      });
+    } else {
+      const newAuthor = {
+        ...request.body,
+        avatar: `https://ui-avatars.com/api/?name=${request.body.name}+${request.body.surname}`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        id: uniqid(),
+      };
+      authors.push(newAuthor);
+      await writeAuthors(authors); // updating authors.json with last added author
+      response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
 // GET (ALL THE AUTHORS)
-authorsRouter.get("/", async (request, response) => {
+authorsRouter.get("/", async (request, response, next) => {
   // const fileContentRaw = fs.readFileSync(authorsJSONPath);
   // console.log(fileContentRaw); // fileContentRow <Buffer 5b 7b 22 6e 61... -> we should convert it into something readible and understandable by people using JSON.parse
-  const authors = await getAuthors();
-  response.send(authors);
+  try {
+    const authors = await getAuthors();
+    response.send(authors);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // GET (SINGLE AUTHOR)
-authorsRouter.get("/:authorId", async (request, response) => {
-  const authors = await getAuthors();
-  const author = authors.find((a) => a.id === request.params.authorId); // find returns the specific author that we searched for
-  response.send(author);
+authorsRouter.get("/:authorId", async (request, response, next) => {
+  try {
+    const authors = await getAuthors();
+    const author = authors.find((a) => a.id === request.params.authorId); // find returns the specific author that we searched for
+    response.send(author);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // PUT (UPDATE A SINGLE AUTHOR)
-authorsRouter.put("/:authorId", async (request, response) => {
-  const authors = await getAuthors();
+authorsRouter.put("/:authorId", async (request, response, next) => {
+  try {
+    const authors = await getAuthors();
 
-  const authorIndex = authors.findIndex(
-    (a) => a.id === request.params.authorId
-  );
-  const oldVersionOfAuthor = authors[authorIndex];
-  const updatedAuthor = {
-    ...oldVersionOfAuthor,
-    ...request.body,
-    updatedAt: new Date(),
-  };
-  authors[authorIndex] = updatedAuthor;
-  // fs.writeFileSync(authorsJSONPath, JSON.stringify(authors)); // updating authors.json with last updated author
-  await writeAuthors(authors);
-  response.send(updatedAuthor);
+    const authorIndex = authors.findIndex(
+      (a) => a.id === request.params.authorId
+    );
+    const oldVersionOfAuthor = authors[authorIndex];
+    const updatedAuthor = {
+      ...oldVersionOfAuthor,
+      ...request.body,
+      updatedAt: new Date(),
+    };
+    authors[authorIndex] = updatedAuthor;
+    // fs.writeFileSync(authorsJSONPath, JSON.stringify(authors)); // updating authors.json with last updated author
+    await writeAuthors(authors);
+    response.send(updatedAuthor);
+  } catch (error) {
+    next(error);
+  }
 });
 
 // DELETE
-authorsRouter.delete("/:authorId", async (request, response) => {
-  const authors = await getAuthors();
-  const remainingAuthors = authors.filter(
-    (a) => a.id !== request.params.authorId
-  );
-  await writeAuthors(remainingAuthors);
-  response.status(204).send(); // 204 OK, no content!
+authorsRouter.delete("/:authorId", async (request, response, next) => {
+  try {
+    const authors = await getAuthors();
+    const remainingAuthors = authors.filter(
+      (a) => a.id !== request.params.authorId
+    );
+    await writeAuthors(remainingAuthors);
+    response.status(204).send(); // 204 OK, no content!
+  } catch (error) {
+    next(error);
+  }
 });
 
 export default authorsRouter;
