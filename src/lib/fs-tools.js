@@ -9,11 +9,14 @@ export const dataFolderPath = join(
   "../data"
 );
 
-export const authorsJSONPath = join(dataFolderPath, "auhtors.json");
-export const authorsPublicPath = join(process.cwd(), "./public/img/auhtors");
+export const authorsJSONPath = join(dataFolderPath, "authors.json");
+export const authorsPublicPath = join(process.cwd(), "./public/img/authors");
 
 export const blogPostsJSONPath = join(dataFolderPath, "blogPosts.json");
-// const blogPostImgsPublicPath = join(process.cwd(), "./public/img/blogPosts");
+export const blogPostImgsPublicPath = join(
+  process.cwd(),
+  "./public/img/blogPosts"
+);
 
 export const getAuthors = () => readJSON(authorsJSONPath);
 export const writeAuthors = (authors) => writeJSON(authorsJSONPath, authors);
