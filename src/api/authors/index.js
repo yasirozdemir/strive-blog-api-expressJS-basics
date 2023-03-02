@@ -1,5 +1,5 @@
 import Express from "express";
-import fs from "fs"; // fs (file system), url and path are core modules
+// import fs from "fs"; // fs (file system), url and path are core modules
 import uniqid from "uniqid";
 import { getAuthors, writeAuthors } from "../../lib/fs-tools.js";
 
