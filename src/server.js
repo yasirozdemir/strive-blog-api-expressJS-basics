@@ -9,11 +9,10 @@ import {
   notFoundHandler,
   genericErrorHandler,
 } from "./errorHandlers.js";
+import { publicFolderPath } from "./lib/fs-tools.js";
 
 const server = Express();
 const port = 3001;
-
-server.use(cors());
 
 // Middlewares
 const informativeMiddleware = (req, res, next) => {
@@ -24,8 +23,9 @@ const informativeMiddleware = (req, res, next) => {
   });
   next();
 };
-
+server.use(Express.static(publicFolderPath));
 server.use(informativeMiddleware);
+server.use(cors());
 server.use(Express.json()); //should be added BEFORE the endpoints, otherwise all the request bodies will be undefined!
 
 // Endpoints

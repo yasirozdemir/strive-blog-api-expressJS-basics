@@ -1,7 +1,13 @@
 import Express from "express";
 // import fs from "fs"; // fs (file system), url and path are core modules
 import uniqid from "uniqid";
-import { getAuthors, writeAuthors } from "../../lib/fs-tools.js";
+import {
+  getAuthors,
+  writeAuthors,
+  saveAuthorsAvatars,
+} from "../../lib/fs-tools.js";
+import multer from "multer";
+import { extname } from "path";
 
 const authorsRouter = Express.Router();
 
@@ -103,5 +109,23 @@ authorsRouter.delete("/:authorId", async (request, response, next) => {
     next(error);
   }
 });
+
+// POST AUTHOR AVATAR
+authorsRouter.post(
+  "/:authorId/avatar",
+  multer().single("avatar"),
+  async (req, res, next) => {
+    try {
+      const fileExtension = extname(req.file.originalname);
+      const fileName = req.params.authorId + fileExtension;
+      console.log("file", req.body);
+      await saveAuthorsAvatars(fileName, req.file.buffer);
+
+      res.status(201).send({ message: "file uploaded!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default authorsRouter;
