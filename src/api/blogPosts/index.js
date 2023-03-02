@@ -193,18 +193,28 @@ blogPostsRouter.post(
   multer().single("cover"),
   async (req, res, next) => {
     try {
-      const fileExtension = extname(req.file.originalname);
-      const fileName = req.params.blogPostId + fileExtension;
-      await saveBlogPostsCover(fileName, req.file.buffer);
-
       const blogPosts = await getBlogPosts();
       const index = blogPosts.findIndex((b) => b.id === req.params.blogPostId);
-      blogPosts[
-        index
-      ].cover = `http://localhost:3001/img/blogPosts/${fileName}`;
-      await writeBlogPosts(blogPosts);
 
-      res.status(201).send({ message: "cover uploaded!" });
+      if (index !== -1) {
+        const fileExtension = extname(req.file.originalname);
+        const fileName = req.params.blogPostId + fileExtension;
+        await saveBlogPostsCover(fileName, req.file.buffer);
+
+        blogPosts[
+          index
+        ].cover = `http://localhost:3001/img/blogPosts/${fileName}`;
+        await writeBlogPosts(blogPosts);
+
+        res.status(201).send({ message: "cover uploaded!" });
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Blog post with the id (${req.params.blogPostId}) not found!`
+          )
+        );
+      }
     } catch (error) {
       next(error);
     }

@@ -19,7 +19,7 @@ const informativeMiddleware = (req, res, next) => {
   // an example of global middleware
   console.table({
     method: req.method,
-    url: req.url,
+    endpoint: req.url,
   });
   next();
 };

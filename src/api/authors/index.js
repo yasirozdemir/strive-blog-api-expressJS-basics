@@ -8,6 +8,7 @@ import {
 } from "../../lib/fs-tools.js";
 import multer from "multer";
 import { extname } from "path";
+import createHttpError from "http-errors";
 
 const authorsRouter = Express.Router();
 
@@ -115,16 +116,24 @@ authorsRouter.post(
   multer().single("avatar"),
   async (req, res, next) => {
     try {
-      const fileExtension = extname(req.file.originalname);
-      const fileName = req.params.authorId + fileExtension;
-      await saveAuthorsAvatars(fileName, req.file.buffer);
-
       const authors = await getAuthors();
       const index = authors.findIndex((a) => a.id === req.params.authorId);
-      authors[index].avatar = `http://localhost:3001/img/authors/${fileName}`;
-      await writeAuthors(authors);
 
-      res.status(201).send({ message: "avatar uploaded!" });
+      if (index !== -1) {
+        const fileExtension = extname(req.file.originalname);
+        const fileName = req.params.authorId + fileExtension;
+        await saveAuthorsAvatars(fileName, req.file.buffer);
+        authors[index].avatar = `http://localhost:3001/img/authors/${fileName}`;
+        await writeAuthors(authors);
+        res.status(201).send({ message: "avatar uploaded!" });
+      } else {
+        next(
+          createHttpError(
+            404,
+            `Author with the id (${req.params.authorId}) not found!`
+          )
+        );
+      }
     } catch (error) {
       next(error);
     }
