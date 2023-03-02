@@ -118,9 +118,7 @@ authorsRouter.post(
     try {
       const fileExtension = extname(req.file.originalname);
       const fileName = req.params.authorId + fileExtension;
-      console.log("file", req.body);
       await saveAuthorsAvatars(fileName, req.file.buffer);
-
       res.status(201).send({ message: "file uploaded!" });
     } catch (error) {
       next(error);

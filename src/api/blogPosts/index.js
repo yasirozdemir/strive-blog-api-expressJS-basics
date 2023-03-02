@@ -3,7 +3,13 @@ import uniqid from "uniqid";
 import createHttpError from "http-errors";
 import authorsRouter from "../authors/index.js";
 import { checkBlogPostSchema, triggerBadRequest } from "./validation.js";
-import { getBlogPosts, writeBlogPosts } from "../../lib/fs-tools.js";
+import {
+  getBlogPosts,
+  saveBlogPostsCover,
+  writeBlogPosts,
+} from "../../lib/fs-tools.js";
+import multer from "multer";
+import { extname } from "path";
 
 const blogPostsRouter = Express.Router();
 
@@ -138,5 +144,21 @@ blogPostsRouter.delete("/:blogPostId", async (req, res, next) => {
     next(error);
   }
 });
+
+// POST Blog Post Cover
+blogPostsRouter.post(
+  "/:blogPostId/cover",
+  multer().single("cover"),
+  async (req, res, next) => {
+    try {
+      const fileExtension = extname(req.file.originalname);
+      const fileName = req.params.blogPostId + fileExtension;
+      await saveBlogPostsCover(fileName, req.file.buffer);
+      res.status(201).send({ message: "file uploaded!" });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default blogPostsRouter;
