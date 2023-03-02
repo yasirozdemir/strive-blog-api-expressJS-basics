@@ -39,5 +39,6 @@ server.use(notFoundHandler); // 404
 server.use(genericErrorHandler); // it must be at the end of error handlers
 
 server.listen(port, () => {
-  console.table(listEndpoints(server));
+  // console.table(listEndpoints(server));
+  console.log("Server port: ", port);
 });
