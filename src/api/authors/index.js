@@ -36,7 +36,6 @@ authorsRouter.post("/", async (request, response, next) => {
     } else {
       const newAuthor = {
         ...request.body,
-        avatar: `https://ui-avatars.com/api/?name=${request.body.name}+${request.body.surname}`,
         createdAt: new Date(),
         updatedAt: new Date(),
         id: uniqid(),
