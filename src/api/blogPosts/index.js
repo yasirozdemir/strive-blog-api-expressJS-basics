@@ -23,10 +23,6 @@ blogPostsRouter.post(
       const blogPosts = await getBlogPosts();
       const newBlogPost = {
         ...req.body,
-        author: {
-          ...req.body.author,
-          avatar: `https://ui-avatars.com/api/?name=${req.body.name}+${req.body.surname}`,
-        },
         createdAt: new Date(),
         id: uniqid(),
       };
