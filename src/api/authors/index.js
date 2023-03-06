@@ -9,6 +9,8 @@ import {
 import multer from "multer";
 import { extname } from "path";
 import createHttpError from "http-errors";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const authorsRouter = Express.Router();
 
@@ -110,22 +112,65 @@ authorsRouter.delete("/:authorId", async (request, response, next) => {
   }
 });
 
-// POST AUTHOR AVATAR
+// POST author avatar WITHOUT cloudinary
+// authorsRouter.post(
+//   "/:authorId/avatar",
+//   multer().single("avatar"),
+//   async (req, res, next) => {
+//     try {
+//       const authors = await getAuthors();
+//       const index = authors.findIndex((a) => a.id === req.params.authorId);
+
+//       if (index !== -1) {
+//         const fileExtension = extname(req.file.originalname);
+//         const fileName = req.params.authorId + fileExtension;
+//         await saveAuthorsAvatars(fileName, req.file.buffer);
+//         authors[index].avatar = `http://localhost:3001/img/authors/${fileName}`;
+//         await writeAuthors(authors);
+//         res.status(201).send({ message: "avatar uploaded!" });
+//       } else {
+//         next(
+//           createHttpError(
+//             404,
+//             `Author with the id (${req.params.authorId}) not found!`
+//           )
+//         );
+//       }
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "strive-blog/authors/avatars",
+    },
+  }),
+}).single("avatar");
+
+// POST author avatar WITH cloudinary
 authorsRouter.post(
   "/:authorId/avatar",
-  multer().single("avatar"),
+  cloudinaryUploader,
   async (req, res, next) => {
     try {
       const authors = await getAuthors();
-      const index = authors.findIndex((a) => a.id === req.params.authorId);
+      const index = authors.findIndex((b) => b.id === req.params.authorId);
 
       if (index !== -1) {
-        const fileExtension = extname(req.file.originalname);
-        const fileName = req.params.authorId + fileExtension;
-        await saveAuthorsAvatars(fileName, req.file.buffer);
-        authors[index].avatar = `http://localhost:3001/img/authors/${fileName}`;
+        // const fileExtension = extname(req.file.originalname);
+        // const fileName = req.params.authorId + fileExtension;
+
+        // find a way to change the file name with ID
+        authors[index].avatar = req.file.path;
         await writeAuthors(authors);
-        res.status(201).send({ message: "avatar uploaded!" });
+
+        console.log(req.file);
+
+        res.status(201).send({ message: "cover uploaded!" });
       } else {
         next(
           createHttpError(
