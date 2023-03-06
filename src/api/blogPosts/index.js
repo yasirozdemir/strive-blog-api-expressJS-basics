@@ -10,6 +10,8 @@ import {
 } from "../../lib/fs-tools.js";
 import multer from "multer";
 import { extname } from "path";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const blogPostsRouter = Express.Router();
 
@@ -183,23 +185,64 @@ blogPostsRouter.get("/:blogPostId/comments", async (req, res, next) => {
   }
 });
 
-// POST Blog Post Cover
+// POST Blog Post Cover WITHOUT cloudinary
+// blogPostsRouter.post(
+//   "/:blogPostId/cover",
+//   multer().single("cover"),
+//   async (req, res, next) => {
+//     try {
+// const blogPosts = await getBlogPosts();
+// const index = blogPosts.findIndex((b) => b.id === req.params.blogPostId);
+
+// if (index !== -1) {
+//   const fileExtension = extname(req.file.originalname);
+//   const fileName = req.params.blogPostId + fileExtension;
+//   await saveBlogPostsCover(fileName, req.file.buffer);
+
+//   blogPosts[
+//     index
+//   ].cover = `http://localhost:3001/img/blogPosts/${fileName}`;
+//   await writeBlogPosts(blogPosts);
+
+//   res.status(201).send({ message: "cover uploaded!" });
+// } else {
+//   next(
+//     createHttpError(
+//       404,
+//       `Blog post with the id (${req.params.blogPostId}) not found!`
+//     )
+//   );
+// }
+//     } catch (error) {
+//       next(error);
+//     }
+//   }
+// );
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "strive-blog/blogs/covers",
+    },
+  }),
+}).single("cover");
+
+// POST Blog Post Cover WITH cloudinary
 blogPostsRouter.post(
   "/:blogPostId/cover",
-  multer().single("cover"),
+  cloudinaryUploader,
   async (req, res, next) => {
     try {
       const blogPosts = await getBlogPosts();
       const index = blogPosts.findIndex((b) => b.id === req.params.blogPostId);
 
       if (index !== -1) {
-        const fileExtension = extname(req.file.originalname);
-        const fileName = req.params.blogPostId + fileExtension;
-        await saveBlogPostsCover(fileName, req.file.buffer);
+        // const fileExtension = extname(req.file.originalname);
+        // const fileName = req.params.blogPostId + fileExtension;
 
-        blogPosts[
-          index
-        ].cover = `http://localhost:3001/img/blogPosts/${fileName}`;
+        // find a way to change the file name with ID
+        blogPosts[index].cover = req.file.path;
         await writeBlogPosts(blogPosts);
 
         res.status(201).send({ message: "cover uploaded!" });
