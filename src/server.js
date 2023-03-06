@@ -10,9 +10,10 @@ import {
   genericErrorHandler,
 } from "./errorHandlers.js";
 import { publicFolderPath } from "./lib/fs-tools.js";
+import createHttpError from "http-errors";
 
 const server = Express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 // Middlewares
 const informativeMiddleware = (req, res, next) => {
@@ -23,6 +24,25 @@ const informativeMiddleware = (req, res, next) => {
   });
   next();
 };
+
+const whitelist = [process.env.FE_DEV_URL, process.env.FE_PROD_URL];
+server.use(
+  cors({
+    origin: (currentOrigin, corsNext) => {
+      if (!currentOrigin || whitelist.indexOf(currentOrigin) !== -1) {
+        corsNext(null, true);
+      } else {
+        corsNext(
+          createHttpError(
+            400,
+            `Origin ${currentOrigin} is not in the whitelist!`
+          )
+        );
+      }
+    },
+  })
+);
+
 server.use(Express.static(publicFolderPath));
 server.use(informativeMiddleware);
 server.use(cors());
@@ -40,5 +60,5 @@ server.use(genericErrorHandler); // it must be at the end of error handlers
 
 server.listen(port, () => {
   // console.table(listEndpoints(server));
-  console.log("Server port: ", port);
+  console.log("Server running on port", port);
 });
