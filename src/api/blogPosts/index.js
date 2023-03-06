@@ -134,7 +134,7 @@ blogPostsRouter.delete("/:blogPostId", async (req, res, next) => {
       next(
         createHttpError(
           404,
-          "Blog Post with the id (${req.params.blogPostId}) not found!"
+          `Blog Post with the id ${req.params.blogPostId} not found!`
         )
       );
     }
