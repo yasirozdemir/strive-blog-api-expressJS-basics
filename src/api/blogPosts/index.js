@@ -264,12 +264,15 @@ blogPostsRouter.post(
 
 blogPostsRouter.get("/:blogPostId/pdf/download", async (req, res, next) => {
   try {
-    res.setHeader("Content-Disposition", "attachment; filename=blogpost.pdf");
     const blogPosts = await getBlogPosts();
     const specificBlogPost = blogPosts.find(
       (b) => b.id === req.params.blogPostId
     );
     if (specificBlogPost) {
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=${specificBlogPost.title}.pdf`
+      );
       const source = blogPostToPDF(specificBlogPost);
       const destination = res;
       pipeline(source, destination, (err) => {

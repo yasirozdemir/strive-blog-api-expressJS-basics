@@ -12,9 +12,21 @@ export const blogPostToPDF = (blogPost) => {
   const printer = new PdfPrinter(fonts);
 
   const docDefinition = {
-    content: [blogPost.title],
+    content: [
+      {
+        text: [blogPost.title],
+        bold: true,
+        margin: [0, 20],
+        fontSize: 24,
+      },
+      {
+        text: [blogPost.content],
+        fontSize: 16,
+      },
+    ],
     defaultStyle: {
       font: "Helvetica",
+      alignment: "left",
     },
   };
 
