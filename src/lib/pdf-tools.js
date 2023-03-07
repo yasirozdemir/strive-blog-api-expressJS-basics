@@ -18,8 +18,7 @@ export const blogPostToPDF = async (blogPost) => {
     content: [
       {
         image: `data:image/jpeg;base64,${coverURLToBase64}`,
-        width: 250,
-        height: 200,
+        width: 350,
         alignment: "center",
       },
       {
