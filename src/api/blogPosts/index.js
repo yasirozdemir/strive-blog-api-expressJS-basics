@@ -273,7 +273,7 @@ blogPostsRouter.get("/:blogPostId/pdf/download", async (req, res, next) => {
         "Content-Disposition",
         `attachment; filename=${specificBlogPost.title}.pdf`
       );
-      const source = blogPostToPDF(specificBlogPost);
+      const source = await blogPostToPDF(specificBlogPost);
       const destination = res;
       pipeline(source, destination, (err) => {
         if (err) console.log(err);
