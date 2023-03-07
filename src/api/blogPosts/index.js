@@ -260,4 +260,6 @@ blogPostsRouter.post(
   }
 );
 
+blogPostsRouter.get("/pdf/download");
+
 export default blogPostsRouter;
