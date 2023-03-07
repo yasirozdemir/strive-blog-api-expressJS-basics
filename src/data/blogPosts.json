@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "category": "HORROR",
+    "title": "HELLO RAILWAY & VERCEL",
+    "cover": "https://res.cloudinary.com/yasirdev/image/upload/v1678114635/strive-blog/blogs/covers/pipzy9tthvmvsuzau0xj.jpg",
+    "readTime": {
+      "value": 3,
+      "unit": "seconds"
+    },
+    "author": {
+      "name": "Yasir Ozdemir",
+      "_id": "123456"
+    },
+    "content": "bla bla bla",
+    "comments": [],
+    "createdAt": "2023-03-07T13:23:10.893Z",
+    "id": "eexcjkleya7ezy"
+  }
+]

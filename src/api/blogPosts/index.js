@@ -5,13 +5,15 @@ import authorsRouter from "../authors/index.js";
 import { checkBlogPostSchema, triggerBadRequest } from "./validation.js";
 import {
   getBlogPosts,
-  saveBlogPostsCover,
+  // saveBlogPostsCover,
   writeBlogPosts,
 } from "../../lib/fs-tools.js";
 import multer from "multer";
-import { extname } from "path";
+// import { extname } from "path";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { blogPostToPDF } from "../../lib/pdf-tools.js";
+import { pipeline } from "stream";
 
 const blogPostsRouter = Express.Router();
 
@@ -260,6 +262,29 @@ blogPostsRouter.post(
   }
 );
 
-blogPostsRouter.get("/pdf/download");
+blogPostsRouter.get("/:blogPostId/pdf/download", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=blogpost.pdf");
+    const blogPosts = await getBlogPosts();
+    const specificBlogPost = blogPosts.find(
+      (b) => b.id === req.params.blogPostId
+    );
+    if (specificBlogPost) {
+      const source = blogPostToPDF(specificBlogPost);
+      const destination = res;
+      pipeline(source, destination, (err) => {
+        if (err) console.log(err);
+      });
+    } else
+      next(
+        createHttpError(
+          404,
+          `Blog Post with the id (${req.params.blogPostId}) not found!`
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default blogPostsRouter;

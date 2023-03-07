@@ -1,6 +1,6 @@
-import PdfPrinter from "pdfmade";
+import PdfPrinter from "pdfmake";
 
-export const blogPostToPDF = () => {
+export const blogPostToPDF = (blogPost) => {
   const fonts = {
     Helvetica: {
       normal: "Helvetica",
@@ -12,7 +12,7 @@ export const blogPostToPDF = () => {
   const printer = new PdfPrinter(fonts);
 
   const docDefinition = {
-    content: ["Hello world!"],
+    content: [blogPost.title],
     defaultStyle: {
       font: "Helvetica",
     },
