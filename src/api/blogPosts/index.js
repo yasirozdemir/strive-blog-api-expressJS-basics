@@ -4,7 +4,9 @@ import createHttpError from "http-errors";
 import authorsRouter from "../authors/index.js";
 import { checkBlogPostSchema, triggerBadRequest } from "./validation.js";
 import {
+  getAuthorsReadibleStream,
   getBlogPosts,
+  getBlogPostsReadibleStream,
   // saveBlogPostsCover,
   writeBlogPosts,
 } from "../../lib/fs-tools.js";
@@ -14,6 +16,7 @@ import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { blogPostToPDF } from "../../lib/pdf-tools.js";
 import { pipeline } from "stream";
+import { Transform } from "@json2csv/node";
 
 const blogPostsRouter = Express.Router();
 
@@ -285,6 +288,36 @@ blogPostsRouter.get("/:blogPostId/pdf/download", async (req, res, next) => {
           `Blog Post with the id (${req.params.blogPostId}) not found!`
         )
       );
+  } catch (error) {
+    next(error);
+  }
+});
+
+export const filesRouter = Express.Router();
+
+filesRouter.get("/blogPosts/csv", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=blogposts.csv");
+    const source = getBlogPostsReadibleStream();
+    const transfrom = new Transform({ fields: ["id", "title", "category"] });
+    const destination = res;
+    pipeline(source, transfrom, destination, (err) => {
+      if (err) console.log(err);
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+filesRouter.get("/authors/csv", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=authors.csv");
+    const source = getAuthorsReadibleStream();
+    const transfrom = new Transform({ fields: ["id", "name", "surname"] });
+    const destination = res;
+    pipeline(source, transfrom, destination, (err) => {
+      if (err) console.log(err);
+    });
   } catch (error) {
     next(error);
   }
