@@ -13,7 +13,7 @@ import multer from "multer";
 // import { extname } from "path";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { blogPostToPDF } from "../../lib/pdf-tools.js";
+import { blogPostToPDF, blogPostToPDFAsync } from "../../lib/pdf-tools.js";
 import { pipeline } from "stream";
 import { Transform } from "@json2csv/node";
 import { sendPostPublishedEmail } from "../../lib/email-tools.js";
@@ -35,7 +35,8 @@ blogPostsRouter.post(
       };
       blogPosts.push(newBlogPost);
       await writeBlogPosts(blogPosts);
-      await sendPostPublishedEmail(newBlogPost.author.email);
+      await blogPostToPDFAsync(newBlogPost);
+      // await sendPostPublishedEmail(newBlogPost.author.email);
       res.status(201).send({ postId: newBlogPost.id });
     } catch (error) {
       next(error);

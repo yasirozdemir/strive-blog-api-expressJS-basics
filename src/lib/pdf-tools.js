@@ -41,15 +41,15 @@ export const blogPostToPDF = async (blogPost) => {
     },
   };
 
-  const pdfReadableStream = printer.createPdfKitDocument(docDefinition, {});
+  const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
   pdfReadableStream.end();
 
   return pdfReadableStream;
 };
 
 export const blogPostToPDFAsync = async (blogPost) => {
-  const source = await blogPostToPDF();
-  const destination = getPDFWritableStream();
+  const source = await blogPostToPDF(blogPost);
+  const destination = getPDFWritableStream(`${blogPost.title}.pdf`);
   const promiseBasedPipeline = promisify(pipeline);
   await promiseBasedPipeline(source, destination);
 };
