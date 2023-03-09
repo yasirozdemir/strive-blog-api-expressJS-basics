@@ -16,6 +16,7 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { blogPostToPDF } from "../../lib/pdf-tools.js";
 import { pipeline } from "stream";
 import { Transform } from "@json2csv/node";
+import { sendPostPublishedEmail } from "../../lib/email-tools.js";
 
 const blogPostsRouter = Express.Router();
 
@@ -34,6 +35,7 @@ blogPostsRouter.post(
       };
       blogPosts.push(newBlogPost);
       await writeBlogPosts(blogPosts);
+      await sendPostPublishedEmail(newBlogPost.author.email);
       res.status(201).send({ postId: newBlogPost.id });
     } catch (error) {
       next(error);
