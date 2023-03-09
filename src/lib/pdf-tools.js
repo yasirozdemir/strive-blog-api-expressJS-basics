@@ -1,5 +1,8 @@
 import imageToBase64 from "image-to-base64";
 import PdfPrinter from "pdfmake";
+import { getPDFWritableStream } from "./fs-tools.js";
+import { pipeline } from "stream";
+import { promisify } from "util";
 
 export const blogPostToPDF = async (blogPost) => {
   const coverURLToBase64 = await imageToBase64(blogPost.cover);
@@ -38,8 +41,15 @@ export const blogPostToPDF = async (blogPost) => {
     },
   };
 
-  const pdfReadableStream = printer.createPdfKitDocument(docDefinition, {});
+  const pdfReadableStream = printer.createPdfKitDocument(docDefinition);
   pdfReadableStream.end();
 
   return pdfReadableStream;
+};
+
+export const blogPostToPDFAsync = async (blogPost) => {
+  const source = blogPostToPDF(blogPost);
+  const destination = getPDFWritableStream(`${blogPost.title}.pdf`);
+  const promiseBasedPipeline = promisify(pipeline);
+  await promiseBasedPipeline(source, destination);
 };
