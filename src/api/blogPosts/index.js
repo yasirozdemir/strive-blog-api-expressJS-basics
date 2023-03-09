@@ -4,7 +4,6 @@ import createHttpError from "http-errors";
 import authorsRouter from "../authors/index.js";
 import { checkBlogPostSchema, triggerBadRequest } from "./validation.js";
 import {
-  getAuthorsReadibleStream,
   getBlogPosts,
   getBlogPostsReadibleStream,
   // saveBlogPostsCover,
@@ -41,6 +40,21 @@ blogPostsRouter.post(
     }
   }
 );
+
+// GET CSV
+blogPostsRouter.get("/csv", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=blogposts.csv");
+    const source = getBlogPostsReadibleStream();
+    const transfrom = new Transform({ fields: ["id", "title", "category"] });
+    const destination = res;
+    pipeline(source, transfrom, destination, (err) => {
+      if (err) console.log(err);
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 // GET ALL
 blogPostsRouter.get("/", async (req, res, next) => {
@@ -288,36 +302,6 @@ blogPostsRouter.get("/:blogPostId/pdf/download", async (req, res, next) => {
           `Blog Post with the id (${req.params.blogPostId}) not found!`
         )
       );
-  } catch (error) {
-    next(error);
-  }
-});
-
-export const filesRouter = Express.Router();
-
-filesRouter.get("/blogPosts/csv", async (req, res, next) => {
-  try {
-    res.setHeader("Content-Disposition", "attachment; filename=blogposts.csv");
-    const source = getBlogPostsReadibleStream();
-    const transfrom = new Transform({ fields: ["id", "title", "category"] });
-    const destination = res;
-    pipeline(source, transfrom, destination, (err) => {
-      if (err) console.log(err);
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-filesRouter.get("/authors/csv", async (req, res, next) => {
-  try {
-    res.setHeader("Content-Disposition", "attachment; filename=authors.csv");
-    const source = getAuthorsReadibleStream();
-    const transfrom = new Transform({ fields: ["id", "name", "surname"] });
-    const destination = res;
-    pipeline(source, transfrom, destination, (err) => {
-      if (err) console.log(err);
-    });
   } catch (error) {
     next(error);
   }

@@ -1,7 +1,7 @@
 import Express from "express";
 import listEndpoints from "express-list-endpoints";
 import authorsRouter from "./api/authors/index.js";
-import blogPostsRouter, { filesRouter } from "./api/blogPosts/index.js";
+import blogPostsRouter from "./api/blogPosts/index.js";
 import cors from "cors";
 import {
   badRequestHandler,
@@ -51,7 +51,6 @@ server.use(Express.json()); //should be added BEFORE the endpoints, otherwise al
 // Endpoints
 server.use("/authors", authorsRouter);
 server.use("/blogPosts", blogPostsRouter);
-server.use("/files", filesRouter);
 
 // Error Handlers
 server.use(badRequestHandler); // 400

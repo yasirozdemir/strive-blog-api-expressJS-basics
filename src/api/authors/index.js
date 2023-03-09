@@ -5,12 +5,16 @@ import {
   getAuthors,
   writeAuthors,
   saveAuthorsAvatars,
+  getAuthorsReadibleStream,
 } from "../../lib/fs-tools.js";
 import multer from "multer";
 import { extname } from "path";
 import createHttpError from "http-errors";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { sendRegistrationEmail } from "../../lib/email-tools.js";
+import { Transform } from "@json2csv/node";
+import { pipeline } from "stream";
 
 const authorsRouter = Express.Router();
 
@@ -47,6 +51,21 @@ authorsRouter.post("/", async (request, response, next) => {
       await writeAuthors(authors); // updating authors.json with last added author
       response.status(201).send({ id: newAuthor.id }); // 201 -> OK, created!
     }
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET CSV
+authorsRouter.get("/csv", async (req, res, next) => {
+  try {
+    res.setHeader("Content-Disposition", "attachment; filename=authors.csv");
+    const source = getAuthorsReadibleStream();
+    const transfrom = new Transform({ fields: ["id", "name", "surname"] });
+    const destination = res;
+    pipeline(source, transfrom, destination, (err) => {
+      if (err) console.log(err);
+    });
   } catch (error) {
     next(error);
   }
@@ -184,5 +203,15 @@ authorsRouter.post(
     }
   }
 );
+
+authorsRouter.post("/register", async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    await sendRegistrationEmail(email);
+    res.send({ message: "Registration is succesfull!" });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export default authorsRouter;
