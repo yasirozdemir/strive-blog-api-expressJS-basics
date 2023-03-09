@@ -36,7 +36,7 @@ blogPostsRouter.post(
       blogPosts.push(newBlogPost);
       await writeBlogPosts(blogPosts);
       await blogPostToPDFAsync(newBlogPost);
-      // await sendPostPublishedEmail(newBlogPost.author.email);
+      await sendPostPublishedEmail(newBlogPost.author.email, newBlogPost.title);
       res.status(201).send({ postId: newBlogPost.id });
     } catch (error) {
       next(error);
